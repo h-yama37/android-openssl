@@ -15,7 +15,8 @@
 # try to pick it up with the value of _ANDROID_NDK_ROOT below. If
 # ANDROID_NDK_ROOT is set, then the value is ignored.
 # _ANDROID_NDK="android-ndk-r8e"
-_ANDROID_NDK="android-ndk-r10d"
+# _ANDROID_NDK="android-ndk-r10d"
+_ANDROID_NDK="android-ndk-r10e"
 # _ANDROID_NDK="android-ndk-r10"
 
 # Set _ANDROID_EABI to the EABI you want to use. You can find the
@@ -118,18 +119,21 @@ if [ -z "$ANDROID_TOOLCHAIN" ] || [ ! -d "$ANDROID_TOOLCHAIN" ]; then
 fi
 
 case $_ANDROID_TARGET_SELECT in
-	arch-arm)	  
+	arch-arm)
+      ANDROID_TOOLS="arm-linux-androideabi-gcc arm-linux-androideabi-ranlib arm-linux-androideabi-ld"
+	  ;;
+	arch-arm-v7a)
       ANDROID_TOOLS="arm-linux-androideabi-gcc arm-linux-androideabi-ranlib arm-linux-androideabi-ld"
 	  ;;
     arch-arm64-v8a)
-      ANDROID_TOOLS="aarch64-linux-android-gcc aarch64-linux-android-randlib aarch64-linux-android-ld"
+      ANDROID_TOOLS="aarch64-linux-android-gcc aarch64-linux-android-ranlib aarch64-linux-android-ld"
       ;;
-	arch-x86)	  
+	arch-x86)
       ANDROID_TOOLS="i686-linux-android-gcc i686-linux-android-ranlib i686-linux-android-ld"
-	  ;;	  
-	arch-x86_64)	  
+	  ;;
+	arch-x86_64)
       ANDROID_TOOLS="x86_64-linux-android-gcc x86_64-linux-android-ranlib x86_64-linux-android-ld"
-	  ;;	  
+	  ;;
     arch-mips)
       ANDROID_TOOLS="mipsel-linux-android-gcc mipsel-linux-android-ranlib mipsel-linux-android-ld"
       ;;
