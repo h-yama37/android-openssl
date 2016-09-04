@@ -3,15 +3,23 @@
 # http://wiki.openssl.org/index.php/Android
 #
 set -e
+
+OPENSSL_VERSION="1.0.1t"
+
 rm -rf prebuilt
 mkdir prebuilt
 
-archs=(armeabi arm64-v8a mips mips64 x86 x86_64)
+archs=(armeabi armeabi-v7a arm64-v8a mips mips64 x86 x86_64)
 
 for arch in ${archs[@]}; do
     xLIB="/lib"
     case ${arch} in
         "armeabi")
+            _ANDROID_TARGET_SELECT=arch-arm
+            _ANDROID_ARCH=arch-arm
+            _ANDROID_EABI=arm-linux-androideabi-4.9
+            configure_platform="android" ;;
+        "armeabi-v7a")
             _ANDROID_TARGET_SELECT=arch-arm
             _ANDROID_ARCH=arch-arm
             _ANDROID_EABI=arm-linux-androideabi-4.9
@@ -53,7 +61,10 @@ for arch in ${archs[@]}; do
     . ./setenv-android-mod.sh
 
     echo "CROSS COMPILE ENV : $CROSS_COMPILE"
-    cd openssl-1.0.1j
+
+    rm -rf "openssl-${OPENSSL_VERSION}"
+    tar xfz "openssl-${OPENSSL_VERSION}.tar.gz"
+    cd "openssl-${OPENSSL_VERSION}"
 
     xCFLAGS="-DSHARED_EXTENSION=.so -fPIC -DOPENSSL_PIC -DDSO_DLFCN -DHAVE_DLFCN_H -mandroid -I$ANDROID_DEV/include -B$ANDROID_DEV/$xLIB -O3 -fomit-frame-pointer -Wall"
 
@@ -73,9 +84,19 @@ for arch in ${archs[@]}; do
 
     file libcrypto.so
     file libssl.so
-    cp libcrypto.so ../prebuilt/${arch}/libcrypto.so
-    cp libssl.so ../prebuilt/${arch}/libssl.so
+    file libcrypto.a
+    file libssl.a
+    cp -p libcrypto.so ../prebuilt/${arch}/libcrypto.so
+    cp -p libssl.so ../prebuilt/${arch}/libssl.so
+    cp -p libcrypto.so ../prebuilt/${arch}/libcrypto.a
+    cp -p libssl.so ../prebuilt/${arch}/libssl.a
     cd ..
 done
+
+# include
+cd "openssl-${OPENSSL_VERSION}"
+cp -rfp include ../prebuilt/include
+cd ..
+
 exit 0
 
